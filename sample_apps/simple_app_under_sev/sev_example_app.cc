@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
+//#include <gtest/gtest.h>
 #include <gflags/gflags.h>
 
 #include <sys/socket.h>
@@ -103,7 +103,7 @@ bool run_me_as_server(const string& host_name, int port,
 int main(int an, char** av) {
   gflags::ParseCommandLineFlags(&an, &av, true);
   an = 1;
-  ::testing::InitGoogleTest(&an, av);
+  //::testing::InitGoogleTest(&an, av);
 
   if (FLAGS_operation == "") {
     printf("sev_example_app.exe --print_all=true|false --operation=op --policy_host=policy-host-address --policy_port=policy-host-port\n");
@@ -153,6 +153,17 @@ int main(int an, char** av) {
       printf("cold-init failed\n");
       ret = 1;
     }
+    RSA* r = RSA_new();
+    if (!key_to_RSA(app_trust_data->private_auth_key_, r)) {
+      printf("Failed to convert RSA key\n");
+      ret = 1;
+    }
+    // save RSA key to file
+    printf("Saving private key to key.pem\n");
+    FILE* f = fopen("key.pem", "wb");
+    PEM_write_RSAPrivateKey(f, r, nullptr, nullptr, 0, nullptr, nullptr);
+    fclose(f);
+    RSA_free(r);
   } else if (FLAGS_operation == "warm-restart") {
     if (!app_trust_data->warm_restart()) {
       printf("warm-restart failed\n");
@@ -164,6 +175,11 @@ int main(int an, char** av) {
       printf("certification failed\n");
       ret = 1;
     }
+    printf("Saving certificate to cert.der\n");
+    FILE *f = fopen("cert.der", "wb");
+    fwrite(app_trust_data->private_auth_key_.certificate().data(),
+           app_trust_data->private_auth_key_.certificate().size(), 1, f);
+    fclose(f);
   } else if (FLAGS_operation == "run-app-as-client") {
     if (!app_trust_data->warm_restart()) {
       printf("warm-restart failed\n");
