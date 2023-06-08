@@ -28,6 +28,7 @@
 #include <openssl/err.h>
 
 #include "certifier_framework.h"
+#include "support.h"
 
 using namespace certifier::framework;
 
