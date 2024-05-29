@@ -433,6 +433,17 @@ int main(int an, char **av) {
       ret = 1;
       goto done;
     }
+    RSA* r = RSA_new();
+    if (!key_to_RSA(trust_mgr->private_auth_key_, r)) {
+      printf("Failed to convert RSA key\n");
+      ret = 1;
+    }
+    // save RSA key to file
+    printf("Saving private key to key.pem\n");
+    FILE* f = fopen("key.pem", "wb");
+    PEM_write_RSAPrivateKey(f, r, nullptr, nullptr, 0, nullptr, nullptr);
+    fclose(f);
+    RSA_free(r);
     // Debug
 #ifdef DEBUG
     trust_mgr->print_trust_data();
@@ -448,6 +459,11 @@ int main(int an, char **av) {
       ret = 1;
       goto done;
     }
+    printf("Saving certificate to cert.der\n");
+    FILE *f = fopen("cert.der", "wb");
+    fwrite(trust_mgr->private_auth_key_.certificate().data(),
+           trust_mgr->private_auth_key_.certificate().size(), 1, f);
+    fclose(f);
     // Debug
 #ifdef DEBUG
     trust_mgr->print_trust_data();
