@@ -13,13 +13,13 @@
           "comparator": "eq",
           "type": "string",
           "name": "migrate",
-          "value": "no"
+          "value": "yes"
         },
         {
           "comparator": "eq",
           "type": "string",
           "name": "smt",
-          "value": "no"
+          "value": "yes"
         },
         {
           "comparator": "ge",
@@ -37,19 +37,19 @@
           "comparator": "eq",
           "type": "int",
           "name": "tcb-version",
-          "value": "0x03000000000008115"
+          "value": "0x120f000000000007"
         }
       ]
     }
   ],
 
   "measurements" : [
-    "010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708"
+      "34b16a800ae8718151d33b80afc82335ca488dec4741960ae5fa245f47a22e31dd9afd4ba9398204a1565d5ba1129db7"
   ],
 
   "claims" : [{
       "unaryClause" : {
-        "certSubject" : "ark_cert.der",
+        "certSubject" : "ark-bergamo.der",
         "verb" : "is-trusted-for-attestation"
       },
       "verb" : "says",

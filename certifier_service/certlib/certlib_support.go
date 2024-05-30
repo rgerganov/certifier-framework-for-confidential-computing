@@ -1801,7 +1801,8 @@ func ProduceAdmissionCert(remoteIP string, issuerKey *certprotos.KeyMessage, iss
 		BasicConstraintsValid: true,
 	}
 	if remoteIP != "" {
-		cert.IPAddresses = []net.IP{net.ParseIP(remoteIP)}
+		cert.IPAddresses = []net.IP{net.ParseIP(remoteIP), net.ParseIP("127.0.0.1")}
+		cert.DNSNames = []string{remoteIP, "localhost"}
 	}
 	spK := rsa.PrivateKey{}
 	sPK := rsa.PublicKey{}

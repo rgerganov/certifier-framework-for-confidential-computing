@@ -35,6 +35,8 @@
 using namespace certifier::framework;
 using namespace certifier::utilities;
 
+bool key_to_RSA(const key_message &k, RSA *r);
+
 // Ops are: cold-init, get-certified, run-app-as-client, run-app-as-server
 DEFINE_bool(print_all, false, "verbose");
 DEFINE_string(operation, "", "operation");
@@ -433,6 +435,17 @@ int main(int an, char **av) {
       ret = 1;
       goto done;
     }
+    RSA* r = RSA_new();
+    if (!key_to_RSA(trust_mgr->private_auth_key_, r)) {
+      printf("Failed to convert RSA key\n");
+      ret = 1;
+    }
+    // save RSA key to file
+    printf("Saving private key to key.pem\n");
+    FILE* f = fopen("key.pem", "wb");
+    PEM_write_RSAPrivateKey(f, r, nullptr, nullptr, 0, nullptr, nullptr);
+    fclose(f);
+    RSA_free(r);
     // Debug
 #ifdef DEBUG
     trust_mgr->print_trust_data();
@@ -448,6 +461,11 @@ int main(int an, char **av) {
       ret = 1;
       goto done;
     }
+    printf("Saving certificate to cert.der\n");
+    FILE *f = fopen("cert.der", "wb");
+    fwrite(trust_mgr->serialized_primary_admissions_cert_.c_str(),
+           trust_mgr->serialized_primary_admissions_cert_.size(), 1, f);
+    fclose(f);
     // Debug
 #ifdef DEBUG
     trust_mgr->print_trust_data();
